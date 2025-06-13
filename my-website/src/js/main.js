@@ -105,6 +105,61 @@ class VideoGrid {
     }
 }
 
+class VideoInteractions {
+    constructor() {
+        this.checkAuth();
+        this.setupEventListeners();
+    }
+
+    checkAuth() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            document.querySelectorAll('.auth-required').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = '/login.html';
+                });
+            });
+        }
+    }
+
+    async likeVideo(videoId) {
+        try {
+            const response = await fetch(`/api/videos/${videoId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            const data = await response.json();
+            if (data.success) {
+                this.updateLikeUI(videoId, data.likes);
+            }
+        } catch (error) {
+            console.error('Like error:', error);
+        }
+    }
+
+    async addComment(videoId, content) {
+        try {
+            const response = await fetch(`/api/videos/${videoId}/comment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ content })
+            });
+            const data = await response.json();
+            if (data.success) {
+                this.updateCommentsUI(videoId);
+            }
+        } catch (error) {
+            console.error('Comment error:', error);
+        }
+    }
+}
+
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
     loadVideos();

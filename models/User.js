@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 8
     },
+    avatar: {
+        type: String,
+        default: 'default-avatar.png'
+    },
     verified: {
         type: Boolean,
         default: false
@@ -32,7 +36,19 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    videos: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Video'
+    }],
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Video'
+    }],
+    comments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment'
+    }]
 });
 
 // Hash password before saving

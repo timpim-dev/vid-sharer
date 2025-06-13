@@ -1,0 +1,6 @@
+// filepath: /workspaces/vid-sharer/.env.example
+NODE_ENV=production
+PORT=3000
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/vidsharer
+JWT_SECRET=your-super-secret-key
+BASE_URL=https://your-app-name.onrender.com

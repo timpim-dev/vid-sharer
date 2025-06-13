@@ -7,7 +7,9 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const User = require('./models/User');
+const Video = require('./models/Video');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -32,6 +34,14 @@ if (process.env.NODE_ENV === 'production') {
         }
     });
 }
+
+// Add security headers
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    next();
+});
 
 // Enable CORS and JSON parsing
 app.use(cors());
@@ -82,45 +92,44 @@ app.get('/upload', (req, res) => {
 });
 
 // Handle file uploads
-app.post('/upload', upload.fields([
-    { name: 'video', maxCount: 1 },
-    { name: 'logo', maxCount: 1 }
-]), async (req, res) => {
+app.post('/upload', upload.single('video'), async (req, res) => {
     try {
-        const { title, channelName } = req.body;
-        const folderName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        const uploadPath = path.join(__dirname, 'uploads', folderName);
-
-        // Create info.txt
-        await fs.writeFile(
-            path.join(uploadPath, 'info.txt'),
-            `Title: ${title}\nChannel: ${channelName}`
-        );
-
-        // Update videos list
-        const videosListPath = path.join(__dirname, 'uploads', 'videos.json');
-        let videosList = [];
-        
-        try {
-            videosList = JSON.parse(await fs.readFile(videosListPath));
-        } catch (error) {
-            // If file doesn't exist, start with empty array
+        // Check if user is authenticated
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Please login to upload videos'
+            });
         }
 
-        videosList.push({
-            id: folderName,
+        const { title } = req.body;
+        const videoPath = req.file.path;
+
+        // Create new video document
+        const video = new Video({
             title,
-            channelName,
-            path: `${folderName}/video.mp4`,
-            logo: `${folderName}/logo.png`
+            path: videoPath,
+            author: req.user._id
         });
 
-        await fs.writeFile(videosListPath, JSON.stringify(videosList, null, 2));
+        await video.save();
 
-        res.json({ success: true, message: 'Upload complete' });
+        // Add video to user's videos
+        await User.findByIdAndUpdate(req.user._id, {
+            $push: { videos: video._id }
+        });
+
+        res.json({
+            success: true,
+            message: 'Upload complete',
+            videoId: video._id
+        });
     } catch (error) {
         console.error('Upload error:', error);
-        res.status(500).json({ success: false, message: 'Upload failed' });
+        res.status(500).json({
+            success: false,
+            message: 'Upload failed'
+        });
     }
 });
 
@@ -257,6 +266,36 @@ app.get('/auth/verify/:token', async (req, res) => {
         });
     }
 });
+
+// Add authentication middleware
+const authMiddleware = async (req, res, next) => {
+    try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) {
+            throw new Error();
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded._id);
+        
+        if (!user) {
+            throw new Error();
+        }
+
+        req.user = user;
+        next();
+    } catch (error) {
+        res.status(401).json({
+            success: false,
+            message: 'Please authenticate'
+        });
+    }
+};
+
+// Protected routes
+app.use('/upload', authMiddleware);
+app.use('/api/videos/like', authMiddleware);
+app.use('/api/videos/comment', authMiddleware);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
