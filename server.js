@@ -1,4 +1,12 @@
 require('dotenv').config();
+
+const config = {
+    mongodb_uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/vidsharer',
+    port: process.env.PORT || 3000,
+    jwt_secret: process.env.JWT_SECRET || 'fallback_secret_key_dev_only',
+    node_env: process.env.NODE_ENV || 'development'
+};
+
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
@@ -12,14 +20,14 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = config.port;
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect(config.mongodb_uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
-    console.log('Connected to MongoDB Atlas');
+    console.log('Connected to MongoDB');
 }).catch(err => {
     console.error('MongoDB connection error:', err);
 });
@@ -301,6 +309,17 @@ app.use('/api/videos/comment', authMiddleware);
 app.use((err, req, res, next) => {
     console.error('Server error:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
+});
+
+// Add error handling for uncaught exceptions
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (error) => {
+    console.error('Unhandled Rejection:', error);
+    process.exit(1);
 });
 
 // Start server
