@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidShare - Video Platform</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components/video-grid.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="assets/logo.png" alt="Channel Logo" id="channel-logo">
+                <h1>VidShare</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="upload.html">Upload</a>
+                <div class="auth-links" id="auth-section">
+                    <a href="login.html" class="auth-btn">Login</a>
+                    <a href="register.html" class="auth-btn">Register</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="video-grid-container">
+            <div class="filters">
+                <select id="sort-videos">
+                    <option value="newest">Newest</option>
+                    <option value="popular">Most Popular</option>
+                    <option value="liked">Most Liked</option>
+                </select>
+            </div>
+            <div class="video-grid" id="video-grid">
+                <!-- Videos will be added here dynamically -->
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 VidShare - Share Your Videos</p>
+    </footer>
+
+    <script src="js/auth/auth.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

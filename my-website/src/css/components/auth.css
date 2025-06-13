@@ -1,0 +1,124 @@
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--background-dark);
+    padding: 1rem;
+}
+
+.auth-form {
+    background: var(--surface-dark);
+    padding: 2rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.1);
+}
+
+.auth-form h2 {
+    color: var(--text-light);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--background-dark);
+    border: 2px solid var(--primary-color);
+    border-radius: 4px;
+    color: var(--text-light);
+    font-size: 1rem;
+    transition: box-shadow 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 255, 157, 0.3);
+}
+
+.auth-submit {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary-color);
+    color: var(--background-dark);
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 157, 0.3);
+}
+
+.auth-form p {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--text-gray);
+}
+
+.auth-form a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-form a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #ff4646;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.message {
+    text-align: center;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.message.success {
+    background: rgba(0, 255, 157, 0.1);
+    color: var(--primary-color);
+}
+
+.message.error {
+    background: rgba(255, 70, 70, 0.1);
+    color: #ff4646;
+}
+
+.hidden {
+    display: none;
+}
+
+.hint {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    margin-top: 0.25rem;
+}
+
+.buttons {
+    margin-top: 1.5rem;
+    text-align: center;
+}
